@@ -61,7 +61,7 @@ class WorldWideWeb(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "Start with Silkshifter and Teleport. Arcane Accounting is not allowed.\nAll enemies are spiders. You always take 1 poison damage per turn."
+        self.description = "Start with Silkshifter and Teleport.\nArcane Accounting is not allowed.\nAll enemies are spiders.\nYou always take 1 poison damage per turn."
         self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
 
     def on_unit_pre_added(self, evt):
@@ -100,7 +100,7 @@ class ToxicHumor(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "All living, nature, and demon enemies have -100 poison resistance and +200 resistance to all other elements.\nAll other enemies have +100 poison resistance."
+        self.description = "All living, nature, and demon enemies have -100 poison resistance,\nand +200 resistance to all other elements.\nAll other enemies have +100 poison resistance."
         self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
 
     def on_unit_pre_added(self, evt):
@@ -121,4 +121,93 @@ class ToxicHumor(Mutator):
         else:
             unit.resists[Tags.Poison] += 100
 
-all_trials.extend([Trial("Pyrotechnician", Pyrotechnician()), Trial("World Wide Web", WorldWideWeb()), Trial("Toxic Humor", ToxicHumor())])
+class CurseOfTheDarkGodBuff(Buff):
+
+    def on_init(self):
+        self.name = "Curse of the Dark God"
+        self.color = Color(252, 176, 96)
+        self.description = "Whenever you cast a spell, before it resolves, you are teleported to the target tile.\nConvert tiles into floor tiles and swap place with the target unit if necessary."
+        self.buff_type = BUFF_TYPE_NONE
+        self.owner_triggers[EventOnSpellCast] = self.on_spell_cast
+    
+    def on_spell_cast(self, evt):
+        if not self.owner.flying:
+            self.owner.level.make_floor(evt.x, evt.y)
+        unit = self.owner.level.get_unit_at(evt.x, evt.y)
+        if unit and not unit.flying:
+            self.owner.level.make_floor(self.owner.x, self.owner.y)
+        self.owner.level.act_move(self.owner, evt.x, evt.y, teleport=True, force_swap=True)
+
+class TomeOfTheDarkGod(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Whenever you cast a spell, before it resolves, you are teleported to the target tile.\nConvert tiles into floor tiles and swap place with the target unit if necessary.\nNon-sorcery spells and self-targeted spells are not available."
+
+    def on_generate_spells(self, spells):
+        for spell in list(spells):
+            if Tags.Sorcery not in spell.tags or spell.range == 0:
+                spells.remove(spell)
+
+    def on_game_begin(self, game):
+        game.p1.apply_buff(CurseOfTheDarkGodBuff())
+
+class ExtraReincarnations(Mutator):
+
+    def __init__(self, lives):
+        Mutator.__init__(self)
+        self.lives = lives
+        self.description = "All enemy units have +%i reincarnations" % self.lives
+        self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
+
+    def on_unit_pre_added(self, evt):
+        if not evt.unit.ever_spawned:
+            self.modify_unit(evt.unit)
+
+    def on_levelgen(self, levelgen):
+        for u in levelgen.level.units:
+            self.modify_unit(u)
+
+    def modify_unit(self, unit):
+        if unit.team == TEAM_PLAYER:
+            return
+        existing = unit.get_buff(ReincarnationBuff)
+        if existing:
+            existing.lives += self.lives
+        else:
+            buff = ReincarnationBuff(self.lives)
+            buff.buff_type = BUFF_TYPE_PASSIVE
+            unit.apply_buff(buff)
+
+class ExtraPhoenixFire(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "All enemies have Phoenix Fire\nPhoenixes explode an additional time on death"
+        self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
+
+    def on_unit_pre_added(self, evt):
+        if not evt.unit.ever_spawned:
+            self.modify_unit(evt.unit)
+
+    def on_levelgen(self, levelgen):
+        for u in levelgen.level.units:
+            self.modify_unit(u)
+
+    def modify_unit(self, unit):
+        if unit.team == TEAM_PLAYER:
+            return
+        existing = unit.get_buff(PhoenixBuff)
+        if existing:
+            existing.stack_type = STACK_INTENSITY
+        buff = PhoenixBuff()
+        buff.buff_type = BUFF_TYPE_PASSIVE
+        buff.stack_type = STACK_INTENSITY
+        unit.apply_buff(buff)
+
+all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
+all_trials.append(Trial("World Wide Web", WorldWideWeb()))
+all_trials.append(Trial("Toxic Humor", ToxicHumor()))
+all_trials.append(Trial("Worst Possible Weekly Run", [NumPortals(1), StackLimit(1), EnemyBuff(lambda: RespawnAs(Gnome), exclude_named="Gnome"), RandomSpellRestriction(0.95), RandomSkillRestriction(0.95)]))
+all_trials.append(Trial("Tome of the Dark God", TomeOfTheDarkGod()))
+all_trials.append(Trial("Angry Birds", [ExtraPhoenixFire(), ExtraReincarnations(1)]))
