@@ -37,3 +37,7 @@ Angry Birds:
 - All enemy units have +1 reincarnation.
 - ALl enemy units have Phoenix Fire.
 - Phoenixes explode an additional time on death.
+
+Full Immunity:
+- All enemies gain 100 resistance of each damage type they are immune to.
+- Fiery Judgement, Starfire, and Holy Thunder are not allowed.

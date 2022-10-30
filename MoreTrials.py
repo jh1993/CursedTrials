@@ -1,6 +1,8 @@
 from Mutators import *
 from Level import *
 from Consumables import *
+from Upgrades import *
+from Spells import *
 
 class FireworksSpell(Spell):
 
@@ -95,6 +97,7 @@ class WorldWideWeb(Mutator):
         for skill in game.all_player_skills:
             if isinstance(skill, SilkShifter):
                 game.p1.apply_buff(skill)
+                return
 
 class ToxicHumor(Mutator):
 
@@ -205,9 +208,37 @@ class ExtraPhoenixFire(Mutator):
         buff.stack_type = STACK_INTENSITY
         unit.apply_buff(buff)
 
+class FullImmunity(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "All enemies gain 100 resistance of each damage type they are immune to.\nFiery Judgement, Starfire, and Holy Thunder are not allowed."
+        self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
+
+    def on_unit_pre_added(self, evt):
+        if not evt.unit.ever_spawned:
+            self.modify_unit(evt.unit)
+
+    def on_levelgen(self, levelgen):
+        for u in levelgen.level.units:
+            self.modify_unit(u)
+
+    def modify_unit(self, unit):
+        if unit.team == TEAM_PLAYER:
+            return
+        for tag in unit.resists.keys():
+            if unit.resists[tag] >= 100:
+                unit.resists[tag] += 100
+
+    def on_generate_skills(self, skills):
+        for skill in list(skills):
+            if type(skill) in [FieryJudgement, Starfire, HolyThunder]:
+                skills.remove(skill)
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
 all_trials.append(Trial("Worst Possible Weekly Run", [NumPortals(1), StackLimit(1), EnemyBuff(lambda: RespawnAs(Gnome), exclude_named="Gnome"), RandomSpellRestriction(0.95), RandomSkillRestriction(0.95)]))
 all_trials.append(Trial("Tome of the Dark God", TomeOfTheDarkGod()))
 all_trials.append(Trial("Angry Birds", [ExtraPhoenixFire(), ExtraReincarnations(1)]))
+all_trials.append(Trial("Full Immunity", FullImmunity()))
