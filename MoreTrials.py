@@ -186,8 +186,14 @@ class ExtraPhoenixFire(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "All enemies have Phoenix Fire\nPhoenixes explode an additional time on death"
+        self.description = "Realm 1 has no enemies\nAll enemies have Phoenix Fire\nPhoenixes explode an additional time on death"
         self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
+
+    def on_levelgen_pre(self, levelgen):
+        if levelgen.difficulty == 1:
+            levelgen.num_generators = 0
+            levelgen.num_monsters = 0
+            levelgen.bosses = []
 
     def on_unit_pre_added(self, evt):
         if not evt.unit.ever_spawned:
@@ -235,6 +241,45 @@ class FullImmunity(Mutator):
             if type(skill) in [FieryJudgement, Starfire, HolyThunder]:
                 skills.remove(skill)
 
+class SuckerPunchBuff(Buff):
+
+    def on_init(self):
+        self.color = Tags.Translocation.color
+        self.buff_type = BUFF_TYPE_PASSIVE
+        self.description = "Each turn, teleports to a random tile before acting."
+    
+    def on_pre_advance(self):
+        randomly_teleport(self.owner, RANGE_GLOBAL)
+
+class SuckerPunch(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Realm 1 has no enemies.\nEach turn, each enemy teleports to a random tile before acting.\nAll enemies have Death Touch."
+        self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
+
+    def on_levelgen_pre(self, levelgen):
+        if levelgen.difficulty == 1:
+            levelgen.num_generators = 0
+            levelgen.num_monsters = 0
+            levelgen.bosses = []
+
+    def on_unit_pre_added(self, evt):
+        if not evt.unit.ever_spawned:
+            self.modify_unit(evt.unit)
+
+    def on_levelgen(self, levelgen):
+        for u in levelgen.level.units:
+            self.modify_unit(u)
+
+    def modify_unit(self, unit):
+        if unit.team == TEAM_PLAYER:
+            return
+        unit.apply_buff(SuckerPunchBuff())
+        melee = SimpleMeleeAttack(damage=200, damage_type=Tags.Dark)
+        melee.name = "Death Touch"
+        unit.add_spell(melee, prepend=True)
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -242,3 +287,4 @@ all_trials.append(Trial("Worst Possible Weekly Run", [NumPortals(1), StackLimit(
 all_trials.append(Trial("Tome of the Dark God", TomeOfTheDarkGod()))
 all_trials.append(Trial("Angry Birds", [ExtraPhoenixFire(), ExtraReincarnations(1)]))
 all_trials.append(Trial("Full Immunity", FullImmunity()))
+all_trials.append(Trial("Sucker Punch", SuckerPunch()))

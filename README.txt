@@ -34,10 +34,16 @@ Tome of the Dark God:
 - Non-sorcery spells and self-targeted spells are not available.
 
 Angry Birds:
-- All enemy units have +1 reincarnation.
+- Realm 1 has no enemies
 - ALl enemy units have Phoenix Fire.
 - Phoenixes explode an additional time on death.
+- All enemy units have +1 reincarnation.
 
 Full Immunity:
 - All enemies gain 100 resistance of each damage type they are immune to.
 - Fiery Judgement, Starfire, and Holy Thunder are not allowed.
+
+Sucker Punch:
+- Realm 1 has no enemies.
+- Each turn, each enemy teleports to a random tile before acting.
+- All enemies have Death Touch.
