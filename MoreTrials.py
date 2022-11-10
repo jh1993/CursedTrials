@@ -64,11 +64,10 @@ class WorldWideWeb(Mutator):
     def __init__(self):
         Mutator.__init__(self)
         self.description = "Start with Silkshifter and Teleport.\nArcane Accounting is not allowed.\nAll enemies are spiders.\nYou always take 1 poison damage per turn."
-        self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
+        self.global_triggers[EventOnUnitAdded] = self.on_unit_added
 
-    def on_unit_pre_added(self, evt):
-        if not evt.unit.ever_spawned:
-            self.modify_unit(evt.unit)
+    def on_unit_added(self, evt):
+        self.modify_unit(evt.unit)
 
     def on_levelgen(self, levelgen):
         for u in levelgen.level.units:
@@ -77,7 +76,8 @@ class WorldWideWeb(Mutator):
     def modify_unit(self, unit):
         if unit.team == TEAM_PLAYER:
             return
-        unit.tags.append(Tags.Spider)
+        if Tags.Spider not in unit.tags:
+            unit.tags.append(Tags.Spider)
         buff = SpiderBuff()
         buff.buff_type = BUFF_TYPE_PASSIVE
         unit.apply_buff(buff)
@@ -161,11 +161,10 @@ class ExtraReincarnations(Mutator):
         Mutator.__init__(self)
         self.lives = lives
         self.description = "All enemy units have +%i reincarnations" % self.lives
-        self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
+        self.global_triggers[EventOnUnitAdded] = self.on_unit_added
 
-    def on_unit_pre_added(self, evt):
-        if not evt.unit.ever_spawned:
-            self.modify_unit(evt.unit)
+    def on_unit_added(self, evt):
+        self.modify_unit(evt.unit)
 
     def on_levelgen(self, levelgen):
         for u in levelgen.level.units:
@@ -187,7 +186,7 @@ class ExtraPhoenixFire(Mutator):
     def __init__(self):
         Mutator.__init__(self)
         self.description = "Realm 1 has no enemies\nAll enemies have Phoenix Fire\nPhoenixes explode an additional time on death"
-        self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
+        self.global_triggers[EventOnUnitAdded] = self.on_unit_added
 
     def on_levelgen_pre(self, levelgen):
         if levelgen.difficulty == 1:
@@ -195,9 +194,8 @@ class ExtraPhoenixFire(Mutator):
             levelgen.num_monsters = 0
             levelgen.bosses = []
 
-    def on_unit_pre_added(self, evt):
-        if not evt.unit.ever_spawned:
-            self.modify_unit(evt.unit)
+    def on_unit_added(self, evt):
+        self.modify_unit(evt.unit)
 
     def on_levelgen(self, levelgen):
         for u in levelgen.level.units:
@@ -256,7 +254,7 @@ class SuckerPunch(Mutator):
     def __init__(self):
         Mutator.__init__(self)
         self.description = "Realm 1 has no enemies.\nEach turn, each enemy teleports to a random tile before acting.\nAll enemies have Death Touch."
-        self.global_triggers[EventOnUnitPreAdded] = self.on_unit_pre_added
+        self.global_triggers[EventOnUnitAdded] = self.on_unit_added
 
     def on_levelgen_pre(self, levelgen):
         if levelgen.difficulty == 1:
@@ -264,9 +262,8 @@ class SuckerPunch(Mutator):
             levelgen.num_monsters = 0
             levelgen.bosses = []
 
-    def on_unit_pre_added(self, evt):
-        if not evt.unit.ever_spawned:
-            self.modify_unit(evt.unit)
+    def on_unit_added(self, evt):
+        self.modify_unit(evt.unit)
 
     def on_levelgen(self, levelgen):
         for u in levelgen.level.units:
@@ -280,6 +277,31 @@ class SuckerPunch(Mutator):
         melee.name = "Death Touch"
         unit.add_spell(melee, prepend=True)
 
+class AmogusBuff(Buff):
+
+    def on_init(self):
+        self.buff_type = BUFF_TYPE_PASSIVE
+
+    def on_pre_advance(self):
+        if random.random() >= 0.1:
+            return
+        self.owner.team = TEAM_ENEMY
+
+class AmongThem(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Each minion you summon has a 25% chance to be a traitor.\nEach turn, a traitor has a 10% chance to become permanently hostile before it acts.\nYou cannot tell whether a minion is a traitor until it becomes hostile."
+        self.global_triggers[EventOnUnitAdded] = self.on_unit_added
+
+    def on_unit_added(self, evt):
+        self.modify_unit(evt.unit)
+
+    def modify_unit(self, unit):
+        if unit.team != TEAM_PLAYER or unit.is_player_controlled or random.random() >= 0.25:
+            return
+        unit.apply_buff(AmogusBuff())
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -288,3 +310,4 @@ all_trials.append(Trial("Tome of the Dark God", TomeOfTheDarkGod()))
 all_trials.append(Trial("Angry Birds", [ExtraPhoenixFire(), ExtraReincarnations(1)]))
 all_trials.append(Trial("Full Immunity", FullImmunity()))
 all_trials.append(Trial("Sucker Punch", SuckerPunch()))
+all_trials.append(Trial("Among Them", [SpellTagRestriction(Tags.Conjuration), AmongThem()]))

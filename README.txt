@@ -47,3 +47,9 @@ Sucker Punch:
 - Realm 1 has no enemies.
 - Each turn, each enemy teleports to a random tile before acting.
 - All enemies have Death Touch.
+
+Among Them:
+- Only Conjuration spells.
+- Each minion you summon has a 25% chance to be a traitor.
+- Each turn, a traitor has a 10% chance to become permanently hostile before it acts.
+- You cannot tell whether a minion is a traitor until it becomes hostile.
