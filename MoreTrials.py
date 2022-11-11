@@ -3,6 +3,7 @@ from Level import *
 from Consumables import *
 from Upgrades import *
 from Spells import *
+from Monsters import *
 
 class FireworksSpell(Spell):
 
@@ -302,6 +303,59 @@ class AmongThem(Mutator):
             return
         unit.apply_buff(AmogusBuff())
 
+class ArcaneWeaknessBuff(Buff):
+    def on_init(self):
+        self.name = "Arcane Weakness"
+        self.color = Tags.Arcane.color
+        self.buff_type = BUFF_TYPE_PASSIVE
+        self.resists[Tags.Arcane] = -100
+
+class SpawnBoneShamblersOnDeath(Buff):
+
+    def on_init(self):
+        self.owner_triggers[EventOnDeath] = self.on_death
+        self.name = "Spawn Bone Shamblers on Death"
+        self.buff_type = BUFF_TYPE_PASSIVE
+
+    def on_attempt_apply(self, owner):
+        return "Bone Shambler" not in owner.name
+
+    def on_death(self, evt):
+        for _ in range(2):
+            unit = BoneShambler(self.owner.max_hp//2)
+            if unit.max_hp == 0:
+                return
+            self.summon(unit)
+            
+    def get_tooltip(self):
+        return "On death, spawn 2 bone shamblers with half of this unit's max HP."
+
+class BombasticBones(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Start with Arcane Combustion\nAll units have Arcane Weakness"
+        self.global_triggers[EventOnUnitAdded] = self.on_unit_added
+
+    def on_unit_added(self, evt):
+        self.modify_unit(evt.unit)
+
+    def on_levelgen(self, levelgen):
+        for u in levelgen.level.units:
+            self.modify_unit(u)
+
+    def modify_unit(self, unit):
+        unit.apply_buff(ArcaneWeaknessBuff())
+
+    def on_game_begin(self, game):
+        buff = ArcaneWeaknessBuff()
+        buff.buff_type = BUFF_TYPE_NONE
+        game.p1.apply_buff(buff)
+        for skill in game.all_player_skills:
+            if isinstance(skill, ArcaneCombustion):
+                game.p1.apply_buff(skill)
+                return
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -311,3 +365,4 @@ all_trials.append(Trial("Angry Birds", [ExtraPhoenixFire(), ExtraReincarnations(
 all_trials.append(Trial("Full Immunity", FullImmunity()))
 all_trials.append(Trial("Sucker Punch", SuckerPunch()))
 all_trials.append(Trial("Among Them", [SpellTagRestriction(Tags.Conjuration), AmongThem()]))
+all_trials.append(Trial("Bombastic Bones", [SpellTagRestriction(Tags.Arcane), BombasticBones(), EnemyBuff(SpawnBoneShamblersOnDeath)]))

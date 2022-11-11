@@ -53,3 +53,9 @@ Among Them:
 - Each minion you summon has a 25% chance to be a traitor.
 - Each turn, a traitor has a 10% chance to become permanently hostile before it acts.
 - You cannot tell whether a minion is a traitor until it becomes hostile.
+
+Bombastic Bones:
+- Only Arcane spells.
+- Start with Arcane Combustion.
+- All units have Arcane Weakness.
+- All enemy units have Spawn Bone Shamblers on Death.
