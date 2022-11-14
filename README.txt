@@ -59,3 +59,8 @@ Bombastic Bones:
 - Start with Arcane Combustion.
 - All units have Arcane Weakness.
 - All enemy units have Spawn Bone Shamblers on Death.
+
+Simulated Violence:
+- Whenever an unshielded unit is about to take damage, it gains 1 SH and loses HP equal to the damage it would take.
+- If a unit without reincarnations is reduced to 0 HP this way, it vanishes without dying.
+- Under these conditions, most effects normally triggered by units taking damage or dying cannot be triggered.

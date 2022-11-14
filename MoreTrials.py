@@ -356,6 +356,43 @@ class BombasticBones(Mutator):
                 game.p1.apply_buff(skill)
                 return
 
+class SimulatedViolenceBuff(Buff):
+
+    def on_init(self):
+        self.buff_type = BUFF_TYPE_PASSIVE
+        self.owner_triggers[EventOnPreDamaged] = self.on_pre_damaged
+    
+    def on_pre_damaged(self, evt):
+        if evt.damage <= 0 or self.owner.shields > 0:
+            return
+        damage = math.ceil(evt.damage*(100 - min(self.owner.resists[evt.damage_type], 100))/100)
+        if damage <= 0:
+            return
+        self.owner.add_shields(1)
+        self.owner.cur_hp = max(0, self.owner.cur_hp - damage)
+        if self.owner.cur_hp == 0:
+            self.owner.kill(trigger_death_event=self.owner.has_buff(ReincarnationBuff))
+
+class SimulatedViolence(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Whenever an unshielded unit is about to take damage, it gains 1 SH and loses HP equal to the damage it would take.\nIf a unit without reincarnations is reduced to 0 HP this way, it vanishes without dying.\nUnder these conditions, most effects normally triggered by units taking damage or dying cannot be triggered."
+        self.global_triggers[EventOnUnitAdded] = self.on_unit_added
+
+    def on_unit_added(self, evt):
+        self.modify_unit(evt.unit)
+
+    def on_levelgen(self, levelgen):
+        for u in levelgen.level.units:
+            self.modify_unit(u)
+
+    def modify_unit(self, unit):
+        unit.apply_buff(SimulatedViolenceBuff())
+
+    def on_game_begin(self, game):
+        self.modify_unit(game.p1)
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -366,3 +403,4 @@ all_trials.append(Trial("Full Immunity", FullImmunity()))
 all_trials.append(Trial("Sucker Punch", SuckerPunch()))
 all_trials.append(Trial("Among Them", [SpellTagRestriction(Tags.Conjuration), AmongThem()]))
 all_trials.append(Trial("Bombastic Bones", [SpellTagRestriction(Tags.Arcane), BombasticBones(), EnemyBuff(SpawnBoneShamblersOnDeath)]))
+all_trials.append(Trial("Simulated Violence", SimulatedViolence()))
