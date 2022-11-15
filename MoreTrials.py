@@ -365,7 +365,8 @@ class SimulatedViolenceBuff(Buff):
     def on_pre_damaged(self, evt):
         if evt.damage <= 0 or self.owner.shields > 0:
             return
-        damage = math.ceil(evt.damage*(100 - min(self.owner.resists[evt.damage_type], 100))/100)
+        penetration = evt.penetration if hasattr(evt, "penetration") else 0
+        damage = math.ceil(evt.damage*(100 - min(self.owner.resists[evt.damage_type] - penetration, 100))/100)
         if damage <= 0:
             return
         self.owner.add_shields(1)
