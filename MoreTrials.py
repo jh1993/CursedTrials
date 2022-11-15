@@ -394,6 +394,40 @@ class SimulatedViolence(Mutator):
     def on_game_begin(self, game):
         self.modify_unit(game.p1)
 
+class ShameBuff(Buff):
+
+    def on_init(self):
+        self.name = "Shame"
+        self.color = COLOR_DAMAGE
+        self.buff_type = BUFF_TYPE_NONE
+        self.stack_type = STACK_INTENSITY
+    
+    def on_applied(self, owner):
+        if self.owner.get_buff_stacks(ShameBuff) >= 25:
+            self.owner.level.queue_spell(self.kill())
+
+    def kill(self):
+        self.owner.kill()
+        yield
+
+class JustDontGetHitBuff(Buff):
+
+    def on_init(self):
+        self.buff_type = BUFF_TYPE_PASSIVE
+        self.owner_triggers[EventOnDamaged] = self.on_damaged
+    
+    def on_damaged(self, evt):
+        self.owner.apply_buff(ShameBuff())
+
+class JustDontGetHit(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "When you take damage, you permanently gain a stack of Shame, which cannot be removed.\nIf you reach 25 stacks of Shame, you die instantly."
+
+    def on_game_begin(self, game):
+        game.p1.apply_buff(JustDontGetHitBuff())
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -405,3 +439,4 @@ all_trials.append(Trial("Sucker Punch", SuckerPunch()))
 all_trials.append(Trial("Among Them", [SpellTagRestriction(Tags.Conjuration), AmongThem()]))
 all_trials.append(Trial("Bombastic Bones", [SpellTagRestriction(Tags.Arcane), BombasticBones(), EnemyBuff(SpawnBoneShamblersOnDeath)]))
 all_trials.append(Trial("Simulated Violence", SimulatedViolence()))
+all_trials.append(Trial("Just Don't Get Hit", JustDontGetHit()))

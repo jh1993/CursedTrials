@@ -64,3 +64,7 @@ Simulated Violence:
 - Whenever an unshielded unit is about to take damage, it gains 1 SH and loses HP equal to the damage it would take.
 - If a unit without reincarnations is reduced to 0 HP this way, it vanishes without dying.
 - Under these conditions, most effects normally triggered by units taking damage or dying cannot be triggered.
+
+Just Don't Get Hit:
+- When you take damage, you permanently gain a stack of Shame, which cannot be removed.
+- If you reach 25 stacks of Shame, you die instantly.
