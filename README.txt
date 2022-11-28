@@ -68,3 +68,7 @@ Simulated Violence:
 Just Don't Get Hit:
 - When you take damage, you permanently gain a stack of Shame, which cannot be removed.
 - If you reach 25 stacks of Shame, you die instantly.
+
+Moasseman's Scorn:
+- When you gain a new spell, you lose max HP equal to 50 times your previous number of spells.
+- When you cast a spell, that spell loses 1 max charge until you use a mana potion.

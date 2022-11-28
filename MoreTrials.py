@@ -428,6 +428,55 @@ class JustDontGetHit(Mutator):
     def on_game_begin(self, game):
         game.p1.apply_buff(JustDontGetHitBuff())
 
+class MoassemansScornBuff(Buff):
+
+    def __init__(self, game):
+        self.game = game
+        Buff.__init__(self)
+
+    def on_init(self):
+        self.name = "Moasseman's Scorn"
+        self.color = COLOR_CHARGES
+        self.buff_type = BUFF_TYPE_NONE
+        self.description = "When you gain a new spell, you lose max HP equal to 50 times your previous number of spells.\nWhen you cast a spell, that spell loses 1 max charge until you use a mana potion."
+        self.owner_triggers[EventOnSpellCast] = self.on_spell_cast
+    
+    def on_spell_cast(self, evt):
+        if isinstance(evt.spell, SpellCouponSpell):
+            for buff in list(self.owner.buffs):
+                if isinstance(buff, MaxChargePenaltyBuff):
+                    self.owner.remove_buff(buff)
+            evt.spell.cast_instant(evt.x, evt.y)
+        elif evt.spell.max_charges > 0:
+            self.owner.apply_buff(MaxChargePenaltyBuff(evt.spell))
+            evt.spell.cur_charges = min(evt.spell.cur_charges, evt.spell.get_stat("max_charges"))
+
+    def on_add_spell(self, spell):
+        self.owner.max_hp = max(0, self.owner.max_hp - 50*len(self.owner.spells))
+        self.owner.cur_hp = min(self.owner.cur_hp, self.owner.max_hp)
+        if self.owner.max_hp == 0:
+            self.owner.kill()
+            self.owner.level.is_awaiting_input = False
+            self.game.check_triggers()
+
+class MaxChargePenaltyBuff(Buff):
+    def __init__(self, spell):
+        Buff.__init__(self)
+        self.name = "-1 %s" % spell.name
+        self.color = COLOR_CHARGES
+        self.buff_type = BUFF_TYPE_NONE
+        self.stack_type = STACK_INTENSITY
+        self.spell_bonuses[type(spell)]["max_charges"] = -1
+
+class MoassemansScorn(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "When you gain a new spell, you lose max HP equal to 50 times your previous number of spells.\nWhen you cast a spell, that spell loses 1 max charge until you use a mana potion."
+
+    def on_game_begin(self, game):
+        game.p1.apply_buff(MoassemansScornBuff(game))
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -440,3 +489,4 @@ all_trials.append(Trial("Among Them", [SpellTagRestriction(Tags.Conjuration), Am
 all_trials.append(Trial("Bombastic Bones", [SpellTagRestriction(Tags.Arcane), BombasticBones(), EnemyBuff(SpawnBoneShamblersOnDeath)]))
 all_trials.append(Trial("Simulated Violence", SimulatedViolence()))
 all_trials.append(Trial("Just Don't Get Hit", JustDontGetHit()))
+all_trials.append(Trial("Moasseman's Scorn", MoassemansScorn()))
