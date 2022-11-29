@@ -72,3 +72,7 @@ Just Don't Get Hit:
 Moasseman's Scorn:
 - When you gain a new spell, you lose max HP equal to 50 times your previous number of spells.
 - When you cast a spell, that spell loses 1 max charge until you use a mana potion.
+
+Check Every Tile Every Turn:
+- Each turn, each tile has a 0.02% chance to spawn a Concussive Idol.
+- Purity is not allowed.

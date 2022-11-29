@@ -4,6 +4,8 @@ from Consumables import *
 from Upgrades import *
 from Spells import *
 from Monsters import *
+from Variants import *
+from RareMonsters import *
 
 class FireworksSpell(Spell):
 
@@ -477,6 +479,37 @@ class MoassemansScorn(Mutator):
     def on_game_begin(self, game):
         game.p1.apply_buff(MoassemansScornBuff(game))
 
+class CheckEveryTileEveryTurnBuff(Buff):
+
+    def on_init(self):
+        self.name = "Check Every Tile Every Turn"
+        self.color = Stun().color
+        self.buff_type = BUFF_TYPE_NONE
+        self.description = "Each turn, each tile has a 0.02% chance to spawn a Concussive Idol."
+    
+    def on_advance(self):
+        if all([unit.team == TEAM_PLAYER for unit in self.owner.level.units]):
+            return
+        for tile in self.owner.level.iter_tiles():
+            if random.random() >= 0.0002:
+                continue
+            self.summon(ConcussiveIdol(), target=tile, radius=0, team=TEAM_ENEMY)
+
+class CheckEveryTileEveryTurn(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Each turn, each tile has a 0.02% chance to spawn a Concussive Idol.\nPurity is not allowed."
+
+    def on_game_begin(self, game):
+        game.p1.apply_buff(CheckEveryTileEveryTurnBuff())
+
+    def on_generate_spells(self, spells):
+        for spell in spells:
+            if isinstance(spell, PuritySpell):
+                spells.remove(spell)
+                return
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -490,3 +523,4 @@ all_trials.append(Trial("Bombastic Bones", [SpellTagRestriction(Tags.Arcane), Bo
 all_trials.append(Trial("Simulated Violence", SimulatedViolence()))
 all_trials.append(Trial("Just Don't Get Hit", JustDontGetHit()))
 all_trials.append(Trial("Moasseman's Scorn", MoassemansScorn()))
+all_trials.append(Trial("Check Every Tile Every Turn", CheckEveryTileEveryTurn()))
