@@ -510,6 +510,31 @@ class CheckEveryTileEveryTurn(Mutator):
                 spells.remove(spell)
                 return
 
+random_tags = [Tags.Sorcery, Tags.Enchantment, Tags.Conjuration, Tags.Fire, Tags.Ice, Tags.Lightning, Tags.Nature, Tags.Arcane, Tags.Dark, Tags.Holy, Tags.Chaos, Tags.Metallic, Tags.Translocation, Tags.Dragon, Tags.Orb, Tags.Eye, Tags.Word]
+
+class MemoryRoulette(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "All spells and spell upgrades have randomized levels between 1 and 7.\nAll skills have randomized levels between 4 and 7.\nAll spells and skills have 2 to 4 randomized tags."
+    
+    def on_generate_spells(self, spells):
+        for spell in spells:
+            spell.level = random.choice(list(range(1, 8)))
+            random.shuffle(random_tags)
+            spell.tags = list(random_tags[:random.choice(list(range(2, 5)))])
+            for upgrade in spell.spell_upgrades:
+                upgrade.tags = list(spell.tags)
+                upgrade.level = random.choice(list(range(1, 8)))
+        spells.sort(key=lambda s: s.level)
+
+    def on_generate_skills(self, skills):
+        for skill in skills:
+            skill.level = random.choice(list(range(4, 8)))
+            random.shuffle(random_tags)
+            skill.tags = list(random_tags[:random.choice(list(range(2, 5)))])
+        skills.sort(key=lambda s: s.level)
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -524,3 +549,4 @@ all_trials.append(Trial("Simulated Violence", SimulatedViolence()))
 all_trials.append(Trial("Just Don't Get Hit", JustDontGetHit()))
 all_trials.append(Trial("Moasseman's Scorn", MoassemansScorn()))
 all_trials.append(Trial("Check Every Tile Every Turn", CheckEveryTileEveryTurn()))
+all_trials.append(Trial("Memory Roulette", MemoryRoulette()))
