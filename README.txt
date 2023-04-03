@@ -77,7 +77,7 @@ Check Every Tile Every Turn:
 - Each turn, each tile has a 0.02% chance to spawn a Concussive Idol.
 - Purity is not allowed.
 
-Memory Roulette:
+Improviser Unhinged:
 - All spells and spell upgrades have randomized levels between 1 and 7.
 - All skills have randomized levels between 4 and 7.
 - All spells and skills have 2 to 4 randomized tags.

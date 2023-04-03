@@ -512,7 +512,7 @@ class CheckEveryTileEveryTurn(Mutator):
 
 random_tags = [Tags.Sorcery, Tags.Enchantment, Tags.Conjuration, Tags.Fire, Tags.Ice, Tags.Lightning, Tags.Nature, Tags.Arcane, Tags.Dark, Tags.Holy, Tags.Chaos, Tags.Metallic, Tags.Translocation, Tags.Dragon, Tags.Orb, Tags.Eye, Tags.Word]
 
-class MemoryRoulette(Mutator):
+class ImproviserUnhinged(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
@@ -549,4 +549,4 @@ all_trials.append(Trial("Simulated Violence", SimulatedViolence()))
 all_trials.append(Trial("Just Don't Get Hit", JustDontGetHit()))
 all_trials.append(Trial("Moasseman's Scorn", MoassemansScorn()))
 all_trials.append(Trial("Check Every Tile Every Turn", CheckEveryTileEveryTurn()))
-all_trials.append(Trial("Memory Roulette", MemoryRoulette()))
+all_trials.append(Trial("Improviser Unhinged", ImproviserUnhinged()))
