@@ -479,10 +479,10 @@ class MoassemansScorn(Mutator):
     def on_game_begin(self, game):
         game.p1.apply_buff(MoassemansScornBuff(game))
 
-class CheckEveryTileEveryTurnBuff(Buff):
+class ParanoiaBuff(Buff):
 
     def on_init(self):
-        self.name = "Check Every Tile Every Turn"
+        self.name = "Paranoia"
         self.color = Stun().color
         self.buff_type = BUFF_TYPE_NONE
         self.description = "Each turn, each tile has a 0.02% chance to spawn a Concussive Idol."
@@ -495,14 +495,14 @@ class CheckEveryTileEveryTurnBuff(Buff):
                 continue
             self.summon(ConcussiveIdol(), target=tile, radius=0, team=TEAM_ENEMY)
 
-class CheckEveryTileEveryTurn(Mutator):
+class Paranoia(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
         self.description = "Each turn, each tile has a 0.02% chance to spawn a Concussive Idol.\nPurity is not allowed."
 
     def on_game_begin(self, game):
-        game.p1.apply_buff(CheckEveryTileEveryTurnBuff())
+        game.p1.apply_buff(ParanoiaBuff())
 
     def on_generate_spells(self, spells):
         for spell in spells:
@@ -535,6 +535,38 @@ class ImproviserUnhinged(Mutator):
             skill.tags = list(random_tags[:random.choice(list(range(2, 5)))])
         skills.sort(key=lambda s: s.level)
 
+class BruhMoment(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Whenever a unit takes damage, the realm has a 0.5% chance to be planeshifted.\nThese planeshifts will never result in unreachable tiles."
+
+    def on_game_begin(self, game):
+        game.p1.apply_buff(BruhMomentBuff())
+
+class BruhMomentBuff(Buff):
+
+    def __init__(self):
+        Buff.__init__(self)
+        self.buff_type = BUFF_TYPE_NONE
+        self.name = "Bruh Moment"
+        self.description = "Whenever a unit takes damage, the realm has a 0.5% chance to be planeshifted.\nThese planeshifts will never result in unreachable tiles."
+        self.color = Color(216, 27, 96)
+        self.spell = MordredCorruption()
+        self.spell.num_exits = 3
+        self.global_triggers[EventOnDamaged] = self.on_damaged
+    
+    def on_applied(self, owner):
+        self.spell.caster = self.owner
+        self.spell.owner = self.owner
+
+    def on_damaged(self, evt):
+        if random.random() >= 0.005:
+            return
+        self.owner.level.queue_spell(self.spell.cast(self.owner.x, self.owner.y))
+        self.owner.level.gen_params.ensure_connectivity()
+        self.owner.level.gen_params.ensure_connectivity(chasm=True)
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -548,5 +580,6 @@ all_trials.append(Trial("Bombastic Bones", [SpellTagRestriction(Tags.Arcane), Bo
 all_trials.append(Trial("Simulated Violence", SimulatedViolence()))
 all_trials.append(Trial("Just Don't Get Hit", JustDontGetHit()))
 all_trials.append(Trial("Moasseman's Scorn", MoassemansScorn()))
-all_trials.append(Trial("Check Every Tile Every Turn", CheckEveryTileEveryTurn()))
+all_trials.append(Trial("Paranoia", Paranoia()))
 all_trials.append(Trial("Improviser Unhinged", ImproviserUnhinged()))
+all_trials.append(Trial("Bruh Moment", BruhMoment()))

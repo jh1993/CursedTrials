@@ -73,7 +73,7 @@ Moasseman's Scorn:
 - When you gain a new spell, you lose max HP equal to 50 times your previous number of spells.
 - When you cast a spell, that spell loses 1 max charge until you use a mana potion.
 
-Check Every Tile Every Turn:
+Paranoia:
 - Each turn, each tile has a 0.02% chance to spawn a Concussive Idol.
 - Purity is not allowed.
 
@@ -81,3 +81,7 @@ Improviser Unhinged:
 - All spells and spell upgrades have randomized levels between 1 and 7.
 - All skills have randomized levels between 4 and 7.
 - All spells and skills have 2 to 4 randomized tags.
+
+Bruh Moment:
+- Whenever a unit takes damage, the realm has a 0.5% chance to be planeshifted.
+- These planeshifts will never result in unreachable tiles.
