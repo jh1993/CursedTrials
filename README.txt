@@ -15,7 +15,7 @@ World Wide Web:
 - Start with Silkshifter and Teleport.
 - Arcane Accounting is not allowed.
 - All enemies are spiders.
-- You always take 1 poison damage per turn.
+- You always take 1 poison damage per turn if there are enemies in the realm.
 
 Toxic Humor:
 - All living, nature, and demon enemies have -100 poison resistance, and +200 resistance to all other elements.
@@ -51,7 +51,7 @@ Sucker Punch:
 Among Them:
 - Only Conjuration spells.
 - Each minion you summon has a 25% chance to be a traitor.
-- Each turn, a traitor has a 10% chance to become permanently hostile before it acts.
+- Each turn, a traitor has a 10% chance to become permanently hostile before it acts, if there are enemies in the realm.
 - You cannot tell whether a minion is a traitor until it becomes hostile.
 
 Bombastic Bones:
@@ -83,5 +83,5 @@ Improviser Unhinged:
 - All spells and skills have 2 to 4 randomized tags.
 
 Bruh Moment:
-- Whenever a unit takes damage, the realm has a 0.5% chance to be planeshifted.
+- Whenever a unit takes damage, if there are enemies in the realm, the realm has a 0.5% chance to be planeshifted.
 - These planeshifts will never result in unreachable tiles.

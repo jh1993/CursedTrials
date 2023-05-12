@@ -57,16 +57,18 @@ class CurseOfArachneBuff(Buff):
         self.name = "Curse of Arachne"
         self.color = Tags.Spider.color
         self.buff_type = BUFF_TYPE_NONE
-        self.description = "Take 1 poison damage per turn. Cannot be removed."
+        self.description = "Take 1 poison damage per turn if there are enemies in the realm."
     
     def on_advance(self):
+        if all([u.team == TEAM_PLAYER for u in self.owner.level.units]):
+            return
         self.owner.deal_damage(1, Tags.Poison, self)
 
 class WorldWideWeb(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "Start with Silkshifter and Teleport.\nArcane Accounting is not allowed.\nAll enemies are spiders.\nYou always take 1 poison damage per turn."
+        self.description = "Start with Silkshifter and Teleport.\nArcane Accounting is not allowed.\nAll enemies are spiders.\nYou always take 1 poison damage per turn if there are enemies in the realm."
         self.global_triggers[EventOnUnitAdded] = self.on_unit_added
 
     def on_unit_added(self, evt):
@@ -288,13 +290,15 @@ class AmogusBuff(Buff):
     def on_pre_advance(self):
         if random.random() >= 0.1:
             return
+        if all([u.team == TEAM_PLAYER for u in self.owner.level.units]):
+            return
         self.owner.team = TEAM_ENEMY
 
 class AmongThem(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "Each minion you summon has a 25% chance to be a traitor.\nEach turn, a traitor has a 10% chance to become permanently hostile before it acts.\nYou cannot tell whether a minion is a traitor until it becomes hostile."
+        self.description = "Each minion you summon has a 25% chance to be a traitor.\nEach turn, a traitor has a 10% chance to become permanently hostile before it acts,\nif there are enemies in the realm.\nYou cannot tell whether a minion is a traitor until it becomes hostile."
         self.global_triggers[EventOnUnitAdded] = self.on_unit_added
 
     def on_unit_added(self, evt):
@@ -539,7 +543,7 @@ class BruhMoment(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "Whenever a unit takes damage, the realm has a 0.5% chance to be planeshifted.\nThese planeshifts will never result in unreachable tiles."
+        self.description = "Whenever a unit takes damage, if there are enemies in the realm,\nthe realm has a 0.5% chance to be planeshifted.\nThese planeshifts will never result in unreachable tiles."
 
     def on_game_begin(self, game):
         game.p1.apply_buff(BruhMomentBuff())
@@ -550,7 +554,7 @@ class BruhMomentBuff(Buff):
         Buff.__init__(self)
         self.buff_type = BUFF_TYPE_NONE
         self.name = "Bruh Moment"
-        self.description = "Whenever a unit takes damage, the realm has a 0.5% chance to be planeshifted.\nThese planeshifts will never result in unreachable tiles."
+        self.description = "Whenever a unit takes damage, if there are enemies in the realm, the realm has a 0.5% chance to be planeshifted.\nThese planeshifts will never result in unreachable tiles."
         self.color = Color(216, 27, 96)
         self.spell = MordredCorruption()
         self.spell.num_exits = 3
@@ -562,6 +566,8 @@ class BruhMomentBuff(Buff):
 
     def on_damaged(self, evt):
         if random.random() >= 0.005:
+            return
+        if all([u.team == TEAM_PLAYER for u in self.owner.level.units]):
             return
         self.owner.level.queue_spell(self.spell.cast(self.owner.x, self.owner.y))
         self.owner.level.gen_params.ensure_connectivity()
