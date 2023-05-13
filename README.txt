@@ -85,3 +85,7 @@ Improviser Unhinged:
 Bruh Moment:
 - Whenever a unit takes damage, if there are enemies in the realm, the realm has a 0.5% chance to be planeshifted.
 - These planeshifts will never result in unreachable tiles.
+
+Skill Issue:
+- Realm 1 and 2 have no enemies.
+- Spells are unavailable.

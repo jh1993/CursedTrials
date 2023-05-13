@@ -573,6 +573,21 @@ class BruhMomentBuff(Buff):
         self.owner.level.gen_params.ensure_connectivity()
         self.owner.level.gen_params.ensure_connectivity(chasm=True)
 
+class SkillIssue(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Realm 1 and 2 have no enemies\nSpells are unavailable"
+
+    def on_levelgen_pre(self, levelgen):
+        if levelgen.difficulty <= 2:
+            levelgen.num_generators = 0
+            levelgen.num_monsters = 0
+            levelgen.bosses = []
+
+    def on_generate_spells(self, spells):
+        spells.clear()
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -589,3 +604,4 @@ all_trials.append(Trial("Moasseman's Scorn", MoassemansScorn()))
 all_trials.append(Trial("Paranoia", Paranoia()))
 all_trials.append(Trial("Improviser Unhinged", ImproviserUnhinged()))
 all_trials.append(Trial("Bruh Moment", BruhMoment()))
+all_trials.append(Trial("Skill Issue", SkillIssue()))
