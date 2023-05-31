@@ -89,3 +89,7 @@ Bruh Moment:
 Skill Issue:
 - Realm 1 and 2 have no enemies.
 - Spells are unavailable.
+
+Eye Scream:
+- Realms have no walls.
+- All enemies have Respawn As Ice Eye.

@@ -588,6 +588,17 @@ class SkillIssue(Mutator):
     def on_generate_spells(self, spells):
         spells.clear()
 
+class NoWalls(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Realms have no walls"
+    
+    def on_levelgen(self, levelgen):
+        for tile in levelgen.level.iter_tiles():
+            if tile.is_wall():
+                levelgen.level.make_chasm(tile.x, tile.y)
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -605,3 +616,4 @@ all_trials.append(Trial("Paranoia", Paranoia()))
 all_trials.append(Trial("Improviser Unhinged", ImproviserUnhinged()))
 all_trials.append(Trial("Bruh Moment", BruhMoment()))
 all_trials.append(Trial("Skill Issue", SkillIssue()))
+all_trials.append(Trial("Eye Scream", [NoWalls(), EnemyBuff(lambda: RespawnAs(FloatingEyeIce), exclude_named="Ice Eye")]))
