@@ -667,17 +667,17 @@ class PjoxtsScornBuff(Buff):
     def get_description(self):
         if not self.owner:
             return ""
-        return "You must have at least %i spells above level 1 before entering the next realm." % self.min_spells(self.owner.level.gen_params.difficulty + 1)
+        return "You must have at least %i spells before entering the next realm." % self.min_spells(self.owner.level.gen_params.difficulty + 1)
 
     def on_unit_added(self, evt):
-        if len([s for s in self.owner.spells if s.level > 1]) < self.min_spells(self.owner.level.gen_params.difficulty):
+        if len(self.owner.spells) < self.min_spells(self.owner.level.gen_params.difficulty):
             self.owner.kill()
 
 class PjoxtsScorn(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "When you enter a new realm, you must have more\nspells than 3/4 of the realm number, rounded up.\nLevel 1 spells do not count.\nIf you don't have enough spells, you die instantly."
+        self.description = "When you enter a new realm, you must have more\nspells than 3/4 of the realm number, rounded up.\nIf you don't have enough spells, you die instantly."
 
     def on_game_begin(self, game):
         game.p1.apply_buff(PjoxtsScornBuff())

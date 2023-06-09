@@ -104,7 +104,6 @@ Born Failures:
 
 Pjoxt's Scorn:
 - When you enter a new realm, you must have more spells than 3/4 of the realm number, rounded up.
-- Level 1 spells do not count.
 - If you don't have enough spells, you die instantly.
 
 Noob's Toolbox:
