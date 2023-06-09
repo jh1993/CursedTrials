@@ -1,11 +1,10 @@
 PLEASE CHECK THE DISCORD THREAD FOR UPDATE NOTICES, AND RE-DOWNLOAD THE MOD WHENEVER THERE'S AN UPDATE.
 
+This mod requires my Bugfixes mod, which can be found here: https://github.com/jh1993/Bugfixes
+
 To install this mod, click on the green "Code" button on this page, then "Download ZIP". Please rename the "MoreTrials-main" folder to "MoreTrials" before putting it into your mods folder.
 
-This mod adds several new archmage trials, some of which are meant to be somewhat humorous in theme yet also provide legitimate, mechanically interesting challenges.
-
-My Bugfixes mod is recommended to make the trial descriptions display properly instead of being cut off at the bottom of the screen.
-https://github.com/jh1993/BugsAndScams
+This mod adds new archmage trials, many of which are meant to be somewhat humorous in theme yet also provide legitimate, mechanically interesting challenges.
 
 Pyrotechnician:
 - The only available spell is Fireworks, which deals 0 fire damage in a 0 tile burst.
@@ -93,3 +92,21 @@ Skill Issue:
 Eye Scream:
 - Realms have no walls.
 - All enemies have Respawn As Ice Eye.
+
+Speedrunner:
+- Each turn, if there are enemies in the realm, you have a 5% chance to permanently gain a stack of Anxiety, which cannot be removed.
+- If you reach 25 stacks of Anxiety, you die instantly.
+
+Born Failures:
+- You and your minions deal 999999 less damage, to a minimum of 0.
+- Effects that do not depend on the damage stat are unaffected.
+- Realm 1 and 2 have no enemies.
+
+Pjoxt's Scorn:
+- When you enter a new realm, you must have more spells than 3/4 of the realm number, rounded up.
+- Level 1 spells do not count.
+- If you don't have enough spells, you die instantly.
+
+Noob's Toolbox:
+- Passive skills are unavailable.
+- Spell upgrades are unavailable.

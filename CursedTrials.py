@@ -411,6 +411,8 @@ class ShameBuff(Buff):
     def on_applied(self, owner):
         if self.owner.get_buff_stacks(ShameBuff) >= 25:
             self.owner.level.queue_spell(self.kill())
+        else:
+            self.owner.level.show_effect(0, 0, Tags.Sound_Effect, 'death_player')
 
     def kill(self):
         self.owner.kill()
@@ -599,6 +601,97 @@ class NoWalls(Mutator):
             if tile.is_wall():
                 levelgen.level.make_chasm(tile.x, tile.y)
 
+class SpeedrunnerBuff(Buff):
+
+    def on_init(self):
+        self.buff_type = BUFF_TYPE_PASSIVE
+    
+    def on_advance(self):
+        if random.random() >= 0.05 or all([u.team == TEAM_PLAYER for u in self.owner.level.units]):
+            return
+        buff = ShameBuff()
+        buff.name = "Anxiety"
+        self.owner.apply_buff(buff)
+
+class Speedrunner(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Each turn, if there are enemies in the realm, you have a 5% chance\nto permanently gain a stack of Anxiety, which cannot be removed.\nIf you reach 25 stacks of Anxiety, you die instantly."
+
+    def on_game_begin(self, game):
+        game.p1.apply_buff(SpeedrunnerBuff())
+
+class DepressionBuff(Buff):
+
+    def on_init(self):
+        self.name = "Depression"
+        self.color = COLOR_DAMAGE
+        self.buff_type = BUFF_TYPE_NONE
+        self.global_bonuses["damage"] = -999999
+
+class BornFailures(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "You and your minions deal 999999 less damage, to a minimum of 0.\nEffects that do not depend on the damage stat are unaffected.\nRealm 1 and 2 have no enemies."
+        self.global_triggers[EventOnUnitAdded] = self.on_unit_added
+
+    def on_levelgen_pre(self, levelgen):
+        if levelgen.difficulty <= 2:
+            levelgen.num_generators = 0
+            levelgen.num_monsters = 0
+            levelgen.bosses = []
+
+    def on_unit_added(self, evt):
+        if evt.unit.team != TEAM_PLAYER:
+            return
+        evt.unit.apply_buff(DepressionBuff())
+
+    def on_game_begin(self, game):
+        game.p1.apply_buff(DepressionBuff())
+
+class PjoxtsScornBuff(Buff):
+
+    def on_init(self):
+        self.name = "Pjoxt's Scorn"
+        self.color = Tags.Ice.color
+        self.buff_type = BUFF_TYPE_NONE
+        self.owner_triggers[EventOnUnitAdded] = self.on_unit_added
+    
+    def min_spells(self, num):
+        if not self.owner:
+            return 0
+        return math.ceil(3*num/4)
+
+    def get_description(self):
+        if not self.owner:
+            return ""
+        return "You must have at least %i spells above level 1 before entering the next realm." % self.min_spells(self.owner.level.gen_params.difficulty + 1)
+
+    def on_unit_added(self, evt):
+        if len([s for s in self.owner.spells if s.level > 1]) < self.min_spells(self.owner.level.gen_params.difficulty):
+            self.owner.kill()
+
+class PjoxtsScorn(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "When you enter a new realm, you must have more\nspells than 3/4 of the realm number, rounded up.\nLevel 1 spells do not count.\nIf you don't have enough spells, you die instantly."
+
+    def on_game_begin(self, game):
+        game.p1.apply_buff(PjoxtsScornBuff())
+
+class NoUpgrades(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Spell upgrades are unavailable"
+    
+    def on_generate_spells(self, spells):
+        for s in spells:
+            s.spell_upgrades = []
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -617,3 +710,7 @@ all_trials.append(Trial("Improviser Unhinged", ImproviserUnhinged()))
 all_trials.append(Trial("Bruh Moment", BruhMoment()))
 all_trials.append(Trial("Skill Issue", SkillIssue()))
 all_trials.append(Trial("Eye Scream", [NoWalls(), EnemyBuff(lambda: RespawnAs(FloatingEyeIce), exclude_named="Ice Eye")]))
+all_trials.append(Trial("Speedrunner", Speedrunner()))
+all_trials.append(Trial("Born Failures", BornFailures()))
+all_trials.append(Trial("Pjoxt's Scorn", PjoxtsScorn()))
+all_trials.append(Trial("Noob's Toolbox", [NoSkills(), NoUpgrades()]))
