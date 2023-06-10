@@ -97,10 +97,16 @@ Speedrunner:
 - Each turn, if there are enemies in the realm, you have a 5% chance to permanently gain a stack of Anxiety, which cannot be removed.
 - If you reach 25 stacks of Anxiety, you die instantly.
 
-Born Failures:
-- You and your minions deal 999999 less damage, to a minimum of 0.
-- Effects that do not depend on the damage stat are unaffected.
-- Realm 1 and 2 have no enemies.
+Asian Parent:
+- Only Conjuration spells.
+- Your minions deal 999999 less damage, to a minimum of 0.
+- Realm 1, 2, and 3 have no enemies.
+
+Asian Child:
+- Conjuration spells are unavailable.
+- Passive skills are unavailable.
+- You deal 999999 less damage, to a minimum of 0.
+- Realm 1, 2, and 3 have no enemies.
 
 Pjoxt's Scorn:
 - When you enter a new realm, you must have more spells than 3/4 of the realm number, rounded up.

@@ -630,15 +630,15 @@ class DepressionBuff(Buff):
         self.buff_type = BUFF_TYPE_NONE
         self.global_bonuses["damage"] = -999999
 
-class BornFailures(Mutator):
+class AsianParent(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "You and your minions deal 999999 less damage, to a minimum of 0.\nEffects that do not depend on the damage stat are unaffected.\nRealm 1 and 2 have no enemies."
+        self.description = "Your minions deal 999999 less damage, to a minimum of 0.\nRealm 1, 2, and 3 have no enemies."
         self.global_triggers[EventOnUnitAdded] = self.on_unit_added
 
     def on_levelgen_pre(self, levelgen):
-        if levelgen.difficulty <= 2:
+        if levelgen.difficulty <= 3:
             levelgen.num_generators = 0
             levelgen.num_monsters = 0
             levelgen.bosses = []
@@ -648,8 +648,31 @@ class BornFailures(Mutator):
             return
         evt.unit.apply_buff(DepressionBuff())
 
+class AsianChild(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "You deal 999999 less damage, to a minimum of 0.\nRealm 1, 2, and 3 have no enemies."
+
+    def on_levelgen_pre(self, levelgen):
+        if levelgen.difficulty <= 3:
+            levelgen.num_generators = 0
+            levelgen.num_monsters = 0
+            levelgen.bosses = []
+
     def on_game_begin(self, game):
         game.p1.apply_buff(DepressionBuff())
+
+class NoConjuration(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Conjuration spells are unavailable"
+    
+    def on_generate_spells(self, spells):
+        for s in list(spells):
+            if Tags.Conjuration in s.tags:
+                spells.remove(s)
 
 class PjoxtsScornBuff(Buff):
 
@@ -711,6 +734,7 @@ all_trials.append(Trial("Bruh Moment", BruhMoment()))
 all_trials.append(Trial("Skill Issue", SkillIssue()))
 all_trials.append(Trial("Eye Scream", [NoWalls(), EnemyBuff(lambda: RespawnAs(FloatingEyeIce), exclude_named="Ice Eye")]))
 all_trials.append(Trial("Speedrunner", Speedrunner()))
-all_trials.append(Trial("Born Failures", BornFailures()))
+all_trials.append(Trial("Asian Parent", [SpellTagRestriction(Tags.Conjuration), AsianParent()]))
+all_trials.append(Trial("Asian Child", [NoConjuration(), NoSkills(), AsianChild()]))
 all_trials.append(Trial("Pjoxt's Scorn", PjoxtsScorn()))
 all_trials.append(Trial("Noob's Toolbox", [NoSkills(), NoUpgrades()]))
