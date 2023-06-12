@@ -104,7 +104,6 @@ Asian Parent:
 
 Asian Child:
 - Conjuration spells are unavailable.
-- Passive skills are unavailable.
 - You deal 999999 less damage, to a minimum of 0.
 - Realm 1, 2, and 3 have no enemies.
 
