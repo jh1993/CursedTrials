@@ -763,7 +763,7 @@ class MazeOfMisery(Mutator):
             levelgen.level.make_floor(tile.x, tile.y)
         for tile in levelgen.level.iter_tiles():
             if tile.unit:
-                randomly_teleport(tile.unit, RANGE_GLOBAL)
+                randomly_teleport(tile.unit, RANGE_GLOBAL, flash=False)
         for tile in levelgen.level.iter_tiles():
             if tile.is_wall() or tile.prop or tile.unit:
                 continue
