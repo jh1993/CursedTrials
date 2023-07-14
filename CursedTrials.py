@@ -715,6 +715,61 @@ class NoUpgrades(Mutator):
         for s in spells:
             s.spell_upgrades = []
 
+class BlindcastingBuff(Buff):
+
+    def on_init(self):
+        self.name = "Blindcasting"
+        self.description = "All abilities ignore line of sight."
+        self.global_bonuses["requires_los"] = -1
+        self.buff_type = BUFF_TYPE_PASSIVE
+
+class NoBlindcastingBuff(Buff):
+
+    def on_init(self):
+        self.name = "No Blindcasting"
+        self.description = "All abilities require line of sight."
+        self.global_bonuses["requires_los"] = 9999
+        self.buff_type = BUFF_TYPE_PASSIVE
+
+class MazeOfMisery(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.global_triggers[EventOnUnitAdded] = self.on_unit_added
+        self.global_triggers[EventOnSpellCast] = self.on_spell_cast
+        self.description = "Realms are much more maze-like\nSelf-targeted spells are not available\nYour minions disappear instantly after using self-targeted abilities\nYou and your minions cannot benefit from Blindcasting"
+    
+    def on_game_begin(self, game):
+        game.p1.apply_buff(NoBlindcastingBuff())
+
+    def on_unit_added(self, evt):
+        if evt.unit.team != TEAM_PLAYER or evt.unit.is_player_controlled:
+            return
+        evt.unit.apply_buff(NoBlindcastingBuff())
+
+    def on_spell_cast(self, evt):
+        if evt.spell.caster.team != TEAM_PLAYER or evt.spell.caster.is_player_controlled:
+            return
+        if evt.spell.range == 0:
+            evt.spell.caster.kill(trigger_death_event=False)
+
+    def on_generate_spells(self, spells):
+        for s in list(spells):
+            if s.range == 0:
+                spells.remove(s)
+
+    def on_levelgen(self, levelgen):
+        for tile in levelgen.level.iter_tiles():
+            levelgen.level.make_floor(tile.x, tile.y)
+        for tile in levelgen.level.iter_tiles():
+            if tile.unit:
+                randomly_teleport(tile.unit, RANGE_GLOBAL)
+        for tile in levelgen.level.iter_tiles():
+            if tile.is_wall() or tile.prop or tile.unit:
+                continue
+            levelgen.level.make_wall(tile.x, tile.y)
+        levelgen.ensure_connectivity()
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -738,3 +793,4 @@ all_trials.append(Trial("Asian Parent", [SpellTagRestriction(Tags.Conjuration), 
 all_trials.append(Trial("Asian Child", [NoConjuration(), AsianChild()]))
 all_trials.append(Trial("Pjoxt's Scorn", PjoxtsScorn()))
 all_trials.append(Trial("Noob's Toolbox", [NoSkills(), NoUpgrades()]))
+all_trials.append(Trial("Maze of Misery", [MazeOfMisery(), EnemyBuff(BlindcastingBuff)]))

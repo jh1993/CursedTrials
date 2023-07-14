@@ -114,3 +114,10 @@ Pjoxt's Scorn:
 Noob's Toolbox:
 - Passive skills are unavailable.
 - Spell upgrades are unavailable.
+
+Maze of Misery:
+- Realms are much more maze-like.
+- Self-targeted spells are not available.
+- Your minions disappear instantly after using self-targeted abilities.
+- You and your minions cannot benefit from Blindcasting.
+- All enemies have Blindcasting.
