@@ -758,16 +758,33 @@ class MazeOfMisery(Mutator):
             if s.range == 0:
                 spells.remove(s)
 
-    def on_levelgen(self, levelgen):
-        for tile in levelgen.level.iter_tiles():
-            levelgen.level.make_floor(tile.x, tile.y)
+    def shuffle_objects(self, levelgen):
         for tile in levelgen.level.iter_tiles():
             if tile.unit:
                 randomly_teleport(tile.unit, RANGE_GLOBAL, flash=False)
         for tile in levelgen.level.iter_tiles():
+            if tile.prop:
+                targets = [t for t in levelgen.level.iter_tiles() if t.is_floor() and not t.prop and not t.unit]
+                if targets:
+                    target = random.choice(targets)
+                    prop = tile.prop
+                    levelgen.level.remove_obj(prop)
+                    levelgen.level.add_obj(prop, target.x, target.y)
+
+    def on_levelgen(self, levelgen):
+        for tile in levelgen.level.iter_tiles():
+            levelgen.level.make_floor(tile.x, tile.y)
+        self.shuffle_objects(levelgen)
+        for tile in levelgen.level.iter_tiles():
             if tile.is_wall() or tile.prop or tile.unit:
                 continue
             levelgen.level.make_wall(tile.x, tile.y)
+        for i in range(4):
+            for j in range(4):
+                x = 7*i + random.randint(0, 6)
+                y = 7*j + random.randint(0, 6)
+                levelgen.level.make_floor(x, y)
+        self.shuffle_objects(levelgen)
         levelgen.ensure_connectivity()
 
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
