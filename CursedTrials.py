@@ -787,6 +787,65 @@ class MazeOfMisery(Mutator):
         levelgen.ensure_connectivity()
         self.shuffle_objects(levelgen)
 
+# Difficulty 4 = 8 HP
+def BoneShamblerFragment():
+    return BoneShambler(8)
+# Difficulty 5 = 16 HP
+def SmallBoneShambler():
+    return BoneShambler(16)
+# Difficulty 6 = 32 HP
+# Difficulty 7 = 64 HP
+def LargeBoneShambler():
+    return BoneShambler(64)
+# Difficulty 8 = 128 HP
+# Difficulty 9 = 256 HP
+
+class WorstRNGEver(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "All realms after 4 contain no items.\nAll realms after 4 contain bone shamblers."
+    
+    def on_levelgen_pre(self, levelgen):
+        if levelgen.difficulty <= 4:
+            return
+        levelgen.items = []
+        if levelgen.difficulty <= 10:
+            levelgen.spawn_options.append((BoneShamblerFragment, 4))
+        elif levelgen.difficulty <= 15:
+            levelgen.spawn_options.append((SmallBoneShambler, 5))
+        elif levelgen.difficulty <= 19:
+            levelgen.spawn_options.append((BoneShambler, 6))
+        elif levelgen.difficulty <= 22:
+            levelgen.spawn_options.append((LargeBoneShambler, 7))
+        else:
+            levelgen.spawn_options.append((ToweringBoneShambler, 8))
+
+class ShouldveDiedBuff(Buff):
+
+    def on_init(self):
+        self.name = "Should've Died"
+        self.buff_type = BUFF_TYPE_NONE
+        self.color = COLOR_DAMAGE
+        self.owner_triggers[EventOnDamaged] = self.on_damaged
+    
+    def get_description(self):
+        frac = self.owner.cur_hp/self.owner.max_hp
+        return "You have a %i%% chance to die instantly when taking damage.\nThis number is not entirely accurate; the chance is calculated using your remaining HP after you take damage." % max(0, round((1 - 2*frac)*100))
+    
+    def on_damaged(self, evt):
+        if random.random() < 1 - 2*self.owner.cur_hp/self.owner.max_hp:
+            self.owner.kill()
+
+class ShouldveDied(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Whenever you take damage, you have a 2% chance\nto die instantly per percentage of HP below 50%."
+    
+    def on_game_begin(self, game):
+        game.p1.apply_buff(ShouldveDiedBuff())
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -811,3 +870,5 @@ all_trials.append(Trial("Asian Child", [NoConjuration(), AsianChild()]))
 all_trials.append(Trial("Pjoxt's Scorn", PjoxtsScorn()))
 all_trials.append(Trial("Noob's Toolbox", [NoSkills(), NoUpgrades()]))
 all_trials.append(Trial("Maze of Misery", [MazeOfMisery(), EnemyBuff(BlindcastingBuff)]))
+all_trials.append(Trial("Worst RNG Ever", WorstRNGEver()))
+all_trials.append(Trial("Should've Died", ShouldveDied()))

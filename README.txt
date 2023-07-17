@@ -121,3 +121,10 @@ Maze of Misery:
 - Your minions disappear instantly after using self-targeted abilities.
 - You and your minions cannot benefit from Blindcasting.
 - All enemies have Blindcasting.
+
+Worst RNG Ever:
+- All realms after 4 contain no items.
+- All realms after 4 contain bone shamblers.
+
+Should've Died:
+- Whenever you take damage, you have a 2% chance to die instantly per percentage of HP below 50%.
