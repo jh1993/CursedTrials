@@ -784,8 +784,8 @@ class MazeOfMisery(Mutator):
                 x = 7*i + random.randint(0, 6)
                 y = 7*j + random.randint(0, 6)
                 levelgen.level.make_floor(x, y)
-        self.shuffle_objects(levelgen)
         levelgen.ensure_connectivity()
+        self.shuffle_objects(levelgen)
 
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
