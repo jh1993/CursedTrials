@@ -804,9 +804,11 @@ class WorstRNGEver(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "All realms after 4 contain no items.\nAll realms after 4 contain bone shamblers."
+        self.description = "Realms never contain ruby hearts or shrines.\nAll realms after 4 contain no items.\nAll realms after 4 contain bone shamblers."
     
     def on_levelgen_pre(self, levelgen):
+        if levelgen.difficulty > 1:
+            levelgen.shrine = library(levelgen.game.p1)
         if levelgen.difficulty <= 4:
             return
         levelgen.items = []

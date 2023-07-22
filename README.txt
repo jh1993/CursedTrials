@@ -123,6 +123,7 @@ Maze of Misery:
 - All enemies have Blindcasting.
 
 Worst RNG Ever:
+- Realms never contain ruby hearts or shrines.
 - All realms after 4 contain no items.
 - All realms after 4 contain bone shamblers.
 
