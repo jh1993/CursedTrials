@@ -7,6 +7,19 @@ from Monsters import *
 from Variants import *
 from RareMonsters import *
 
+class FreeFloors(Mutator):
+
+    def __init__(self, last):
+        self.last = last
+        Mutator.__init__(self)
+        self.description = "The first %i realms have no enemies." % self.last
+
+    def on_levelgen_pre(self, levelgen):
+        if levelgen.difficulty <= self.last:
+            levelgen.num_generators = 0
+            levelgen.num_monsters = 0
+            levelgen.bosses = []
+
 class FireworksSpell(Spell):
 
     def on_init(self):
@@ -190,14 +203,8 @@ class ExtraPhoenixFire(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "Realm 1 has no enemies\nAll enemies have Phoenix Fire\nPhoenixes explode an additional time on death"
+        self.description = "All enemies have Phoenix Fire\nPhoenixes explode an additional time on death"
         self.global_triggers[EventOnUnitAdded] = self.on_unit_added
-
-    def on_levelgen_pre(self, levelgen):
-        if levelgen.difficulty == 1:
-            levelgen.num_generators = 0
-            levelgen.num_monsters = 0
-            levelgen.bosses = []
 
     def on_unit_added(self, evt):
         self.modify_unit(evt.unit)
@@ -258,14 +265,8 @@ class SuckerPunch(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "Realm 1 has no enemies.\nEach turn, each enemy teleports to a random tile before acting.\nAll enemies have Death Touch."
+        self.description = "Each turn, each enemy teleports to a random tile before acting.\nAll enemies have Death Touch."
         self.global_triggers[EventOnUnitAdded] = self.on_unit_added
-
-    def on_levelgen_pre(self, levelgen):
-        if levelgen.difficulty == 1:
-            levelgen.num_generators = 0
-            levelgen.num_monsters = 0
-            levelgen.bosses = []
 
     def on_unit_added(self, evt):
         self.modify_unit(evt.unit)
@@ -579,13 +580,7 @@ class SkillIssue(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "Realm 1 and 2 have no enemies\nSpells are unavailable"
-
-    def on_levelgen_pre(self, levelgen):
-        if levelgen.difficulty <= 2:
-            levelgen.num_generators = 0
-            levelgen.num_monsters = 0
-            levelgen.bosses = []
+        self.description = "Spells are unavailable"
 
     def on_generate_spells(self, spells):
         spells.clear()
@@ -634,14 +629,8 @@ class AsianParent(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "Your minions deal 999999 less damage, to a minimum of 0.\nRealm 1, 2, and 3 have no enemies."
+        self.description = "Your minions deal 999999 less damage, to a minimum of 0."
         self.global_triggers[EventOnUnitAdded] = self.on_unit_added
-
-    def on_levelgen_pre(self, levelgen):
-        if levelgen.difficulty <= 3:
-            levelgen.num_generators = 0
-            levelgen.num_monsters = 0
-            levelgen.bosses = []
 
     def on_unit_added(self, evt):
         if evt.unit.team != TEAM_PLAYER:
@@ -652,13 +641,7 @@ class AsianChild(Mutator):
 
     def __init__(self):
         Mutator.__init__(self)
-        self.description = "You deal 999999 less damage, to a minimum of 0.\nRealm 1, 2, and 3 have no enemies."
-
-    def on_levelgen_pre(self, levelgen):
-        if levelgen.difficulty <= 3:
-            levelgen.num_generators = 0
-            levelgen.num_monsters = 0
-            levelgen.bosses = []
+        self.description = "You deal 999999 less damage, to a minimum of 0."
 
     def on_game_begin(self, game):
         game.p1.apply_buff(DepressionBuff())
@@ -853,9 +836,9 @@ all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
 all_trials.append(Trial("Worst Possible Weekly Run", [NumPortals(1), StackLimit(1), EnemyBuff(lambda: RespawnAs(Gnome), exclude_named="Gnome"), RandomSpellRestriction(0.95), RandomSkillRestriction(0.95)]))
 all_trials.append(Trial("Tome of the Dark God", TomeOfTheDarkGod()))
-all_trials.append(Trial("Angry Birds", [ExtraPhoenixFire(), ExtraReincarnations(1)]))
+all_trials.append(Trial("Angry Birds", [FreeFloors(2), ExtraPhoenixFire(), ExtraReincarnations(1)]))
 all_trials.append(Trial("Full Immunity", FullImmunity()))
-all_trials.append(Trial("Sucker Punch", SuckerPunch()))
+all_trials.append(Trial("Sucker Punch", [FreeFloors(1), SuckerPunch()]))
 all_trials.append(Trial("Among Them", [SpellTagRestriction(Tags.Conjuration), AmongThem()]))
 all_trials.append(Trial("Bombastic Bones", [SpellTagRestriction(Tags.Arcane), BombasticBones(), EnemyBuff(SpawnBoneShamblersOnDeath)]))
 all_trials.append(Trial("Simulated Violence", SimulatedViolence()))
@@ -864,11 +847,11 @@ all_trials.append(Trial("Moasseman's Scorn", MoassemansScorn()))
 all_trials.append(Trial("Paranoia", Paranoia()))
 all_trials.append(Trial("Improviser Unhinged", ImproviserUnhinged()))
 all_trials.append(Trial("Bruh Moment", BruhMoment()))
-all_trials.append(Trial("Skill Issue", SkillIssue()))
+all_trials.append(Trial("Skill Issue", [FreeFloors(2), SkillIssue()]))
 all_trials.append(Trial("Eye Scream", [NoWalls(), EnemyBuff(lambda: RespawnAs(FloatingEyeIce), exclude_named="Ice Eye")]))
 all_trials.append(Trial("Speedrunner", Speedrunner()))
-all_trials.append(Trial("Asian Parent", [SpellTagRestriction(Tags.Conjuration), AsianParent()]))
-all_trials.append(Trial("Asian Child", [NoConjuration(), AsianChild()]))
+all_trials.append(Trial("Asian Parent", [FreeFloors(3), SpellTagRestriction(Tags.Conjuration), AsianParent()]))
+all_trials.append(Trial("Asian Child", [FreeFloors(3), NoConjuration(), AsianChild()]))
 all_trials.append(Trial("Pjoxt's Scorn", PjoxtsScorn()))
 all_trials.append(Trial("Noob's Toolbox", [NoSkills(), NoUpgrades()]))
 all_trials.append(Trial("Maze of Misery", [MazeOfMisery(), EnemyBuff(BlindcastingBuff)]))

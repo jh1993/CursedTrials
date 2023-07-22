@@ -33,7 +33,7 @@ Tome of the Dark God:
 - Non-sorcery spells and self-targeted spells are not available.
 
 Angry Birds:
-- Realm 1 has no enemies
+- The first 1 realms have no enemies.
 - ALl enemy units have Phoenix Fire.
 - Phoenixes explode an additional time on death.
 - All enemy units have +1 reincarnation.
@@ -43,7 +43,7 @@ Full Immunity:
 - Fiery Judgement, Starfire, and Holy Thunder are not allowed.
 
 Sucker Punch:
-- Realm 1 has no enemies.
+- The first 1 realms have no enemies.
 - Each turn, each enemy teleports to a random tile before acting.
 - All enemies have Death Touch.
 
@@ -86,7 +86,7 @@ Bruh Moment:
 - These planeshifts will never result in unreachable tiles.
 
 Skill Issue:
-- Realm 1 and 2 have no enemies.
+- The first 2 realms have no enemies.
 - Spells are unavailable.
 
 Eye Scream:
@@ -100,12 +100,12 @@ Speedrunner:
 Asian Parent:
 - Only Conjuration spells.
 - Your minions deal 999999 less damage, to a minimum of 0.
-- Realm 1, 2, and 3 have no enemies.
+- The first 3 realms have no enemies.
 
 Asian Child:
 - Conjuration spells are unavailable.
 - You deal 999999 less damage, to a minimum of 0.
-- Realm 1, 2, and 3 have no enemies.
+- The first 3 realms have no enemies.
 
 Pjoxt's Scorn:
 - When you enter a new realm, you must have more spells than 3/4 of the realm number, rounded up.
