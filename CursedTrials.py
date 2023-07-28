@@ -325,7 +325,7 @@ class SpawnBoneShamblersOnDeath(Buff):
         self.buff_type = BUFF_TYPE_PASSIVE
 
     def on_attempt_apply(self, owner):
-        return not owner.has_buff(SplittingBuff)
+        return not owner.has_buff(SplittingBuff) and not isinstance(owner.source, SplittingBuff)
 
     def on_death(self, evt):
         for _ in range(2):
@@ -831,6 +831,16 @@ class ShouldveDied(Mutator):
     def on_game_begin(self, game):
         game.p1.apply_buff(ShouldveDiedBuff())
 
+class OnlyFloors(Mutator):
+
+    def __init__(self):
+        Mutator.__init__(self)
+        self.description = "Realms contain only floors"
+
+    def on_levelgen(self, levelgen):
+        for tile in levelgen.level.iter_tiles():
+            levelgen.level.make_floor(tile.x, tile.y)
+
 all_trials.append(Trial("Pyrotechnician", Pyrotechnician()))
 all_trials.append(Trial("World Wide Web", WorldWideWeb()))
 all_trials.append(Trial("Toxic Humor", ToxicHumor()))
@@ -857,3 +867,4 @@ all_trials.append(Trial("Noob's Toolbox", [NoSkills(), NoUpgrades()]))
 all_trials.append(Trial("Maze of Misery", [MazeOfMisery(), EnemyBuff(BlindcastingBuff)]))
 all_trials.append(Trial("Worst RNG Ever", WorstRNGEver()))
 all_trials.append(Trial("Should've Died", ShouldveDied()))
+all_trials.append(Trial("Endless Chaff", [EnemyBuff(SpawnBoneShamblersOnDeath), ExtraReincarnations(1), OnlyFloors()]))

@@ -128,3 +128,8 @@ Worst RNG Ever:
 
 Should've Died:
 - Whenever you take damage, you have a 2% chance to die instantly per percentage of HP below 50%.
+
+Endless Chaff:
+- All enemy units have Spawn Bone Shamblers on Death.
+- All enemy units have +1 reincarnations.
+- Realms contain only floors.
