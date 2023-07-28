@@ -36,7 +36,6 @@ Angry Birds:
 - The first 1 realms have no enemies.
 - ALl enemy units have Phoenix Fire.
 - Phoenixes explode an additional time on death.
-- All enemy units have +1 reincarnation.
 
 Full Immunity:
 - All enemies gain 100 resistance of each damage type they are immune to.
