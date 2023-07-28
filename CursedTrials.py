@@ -325,7 +325,7 @@ class SpawnBoneShamblersOnDeath(Buff):
         self.buff_type = BUFF_TYPE_PASSIVE
 
     def on_attempt_apply(self, owner):
-        return "Bone Shambler" not in owner.name
+        return not owner.has_buff(SplittingBuff)
 
     def on_death(self, evt):
         for _ in range(2):
