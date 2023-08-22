@@ -89,6 +89,7 @@ Skill Issue:
 - Spells are unavailable.
 
 Eye Scream:
+- The first 1 realms have no enemies.
 - Realms have no walls.
 - All enemies have Respawn As Ice Eye.
 
